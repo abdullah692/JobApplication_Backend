@@ -8,7 +8,7 @@ const app = express();
 
 const dotenv = require("dotenv").config();
 dbConnection();
-const port = process.env.PORT || 5001;
+const port = process.env.PORT || 5001
 
 const corsOptions = {
   origin: ['http://localhost:3000',"http://localhost:5173"] , // Update to your front-end's origin

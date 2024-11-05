@@ -3,8 +3,11 @@ const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 //GET Request:Get Registered Users
 const getUsers = async (req, res) => {
-  const users = await UserModal.find();
-  res.status(200).json({ message: "Registered users is found", users });
+  // const users = await UserModal.find();
+  // res.status(200).json({ message: "Registered users is found", users });
+
+  const users=await UserModal.find();
+  res.status(200).json({message : "Users is found",users})
 };
 
 //POST Request:Register User
