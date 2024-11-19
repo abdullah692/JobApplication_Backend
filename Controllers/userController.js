@@ -7,7 +7,17 @@ const getUsers = async (req, res) => {
   // res.status(200).json({ message: "Registered users is found", users });
 
   const users=await UserModal.find();
-  res.status(200).json({message : "Users is found",users})
+  console.log(users,"users");
+  
+  if(users.length != 0)
+  {
+
+    res.status(200).json({message : "Users is found",users})
+  }
+  else{
+    res.status(200).json({message : "No users were registered"})
+
+  }
 };
 
 //POST Request:Register User
