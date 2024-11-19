@@ -1,4 +1,4 @@
-const ContactsModal = require("../modals/conatctsModal");
+const ContactsModal = require("../modals/jobModal");
 
 //GET Request : All Contacts
 const getAllContacts = async (req, res) => {

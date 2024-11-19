@@ -15,7 +15,7 @@ const getUsers = async (req, res) => {
     res.status(200).json({message : "Users is found",users})
   }
   else{
-    res.status(200).json({message : "No users were registered"})
+    res.status(200).json({success:true ,message : "No users were registered"})
 
   }
 };
