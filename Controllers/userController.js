@@ -1,18 +1,14 @@
-const UserModal = require("../modals/userModal");
+const UserInfo = require("../modals/userModal");
 const bycrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const catchAsyncErrors = require('../middleware/catchAsyncnErrors')
-const { ErrorHandler } = require("../middleware/Error")
+const { ErrorHandler } = require("../middleware/Error");
+const sendToken = require("../util/jwtToken")
 
 
 //GET Request:Get Registered Users
 const getUsers = async (req, res) => {
-  // const users = await UserModal.find();
-  // res.status(200).json({ message: "Registered users is found", users });
-
-  const users = await UserModal.find();
-  console.log(users, "users");
-
+  const users = await UserInfo.find();
   if (users.length != 0) {
 
     res.status(200).json({ message: "Users is found", users })
@@ -31,20 +27,24 @@ const registerUser = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Kindly fill the form correctly!!", 400))
   }
 
-  const isEmail = await UserModal.findOne({ email });
+  const isEmail = await UserInfo.findOne({ email });
   console.log("isEMial", isEmail);
   if (isEmail) {
     return next(new ErrorHandler("User already registered!!", 400))
   }
-  const user = await UserModal.create({
+  const user = await UserInfo.create({
     name, email, password, phone, role
   })
   if (user) {
-    return res
-      .status(200)
-      .json({ message: "User is Registered Succussfully" });
+    sendToken(user, 200, res, "User is Registered Succussfully")
   }
 })
+
+// if (user) {
+//   return res
+//     .status(200)
+//     .json({ message: "User is Registered Succussfully" });
+// }
 
 // const registerUser = async (req, res) => {
 //   try {

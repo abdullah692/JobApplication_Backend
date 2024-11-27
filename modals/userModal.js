@@ -1,8 +1,10 @@
 const mongoose = require("mongoose");
-const validator=require("validator")
+const validator = require("validator")
+const jwt = require('jsonwebtoken')
 
 
-const UserModal = mongoose.Schema(
+
+const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -22,13 +24,13 @@ const UserModal = mongoose.Schema(
       maxLength: [32, "Password cannot exceed 32 characters!"],
       select: false,
     },
-    phone:{
-      type:Number,
-      required:[true,"Please provide phone number!"]
+    phone: {
+      type: Number,
+      required: [true, "Please provide phone number!"]
     },
-    role:{
-      type:String,
-      required:[true,"Please select a role"],
+    role: {
+      type: String,
+      required: [true, "Please select a role"],
       enum: ["Job Seeker", "Employer"],
 
     },
@@ -37,7 +39,20 @@ const UserModal = mongoose.Schema(
       default: Date.now,
     },
   },
- 
 );
 
-module.exports = mongoose.model("UserInfo", UserModal);
+userSchema.methods.getJWTtoken = function () {
+  return jwt.sign({
+    id: this._id,
+    name: this.name,
+    email: this.email
+  },
+    process.env.JWT_SECRET_KEY,
+    {
+      expiresIn: process.env.JWT_EXPIRES,
+    }
+  )
+}
+
+
+module.exports = mongoose.model("UserInfo", userSchema);
