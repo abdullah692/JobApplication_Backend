@@ -2,6 +2,7 @@ const express = require("express");
 const dbConnection=require('./config/dbConnects')
 const cors=require('cors');
 const validateToken = require("./middleware/validateToken");
+const {errorMiddleware}=require("./middleware/Error")
 
 
 const app = express();
@@ -17,6 +18,7 @@ const corsOptions = {
 
 
 app.use(cors(corsOptions))
+// app.use(errorMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -28,7 +30,7 @@ app.use('/api/users',require('./routes/usersRoutes'))
 app.use("/api", validateToken);
 app.use('/api',require('./routes/contactsRouter'))
 
-
+app.use(errorMiddleware);
 app.listen(port, () => {
   console.log(`Port is listnening to  ${port}`);
 });
