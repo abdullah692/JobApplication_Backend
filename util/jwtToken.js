@@ -8,7 +8,7 @@ const sendToken = (user, statusCode, res, message) => {
     // Send the token in the JSON response
     res.status(statusCode).json({
       success: true,
-      user,
+      // user,
       message,
       token, // Token included in the response
     });

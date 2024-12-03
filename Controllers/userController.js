@@ -26,96 +26,87 @@ const registerUser = catchAsyncErrors(async (req, res, next) => {
   if (!name || !email || !password || !phone || !role) {
     return next(new ErrorHandler("Kindly fill the form correctly!!", 400))
   }
-
+  if (password.length < 6 || password.length > 32) {
+    return next(
+      new ErrorHandler("Password must be between 6 and 32 characters!", 400)
+    );
+  }
   const isEmail = await UserInfo.findOne({ email });
   console.log("isEMial", isEmail);
   if (isEmail) {
     return next(new ErrorHandler("User already registered!!", 400))
   }
+  const bycryptPass = await bycrypt.hash(password, 5);
   const user = await UserInfo.create({
-    name, email, password, phone, role
+    name, email, password: bycryptPass, phone, role
   })
   if (user) {
     sendToken(user, 200, res, "User is Registered Succussfully")
   }
 })
 
-// if (user) {
-//   return res
-//     .status(200)
-//     .json({ message: "User is Registered Succussfully" });
-// }
+//POST Request:Login User
+const postLogin = catchAsyncErrors(async (req, res, next) => {
+  const { email, password, role } = req.body;
+  if (!email || !password || !role) {
+    return next(new ErrorHandler("Please provide the credentials", 400))
+  }
+  const user =await UserInfo.findOne({ email }).select("+password");
+  if (!user) {
+    return next(new ErrorHandler("Invalid credentials entered", 400))
+  }
+  const isPaswordMatch = await bycrypt.compare(password, user.password)
+  if (!isPaswordMatch) {
+    return next(new ErrorHandler("Invalid credentials entered", 400))
+  }
+  if (user.role != role) {
+    next(new ErrorHandler(`User with provided email and role not found!`, 404))
+  }
+  sendToken(user, 200, res, "User is LoggedIn Successfully!!")
+})
 
-// const registerUser = async (req, res) => {
+//POST Request:Login User
+// const postLogin = async (req, res) => {
+//   const { email, password } = req.body;
 //   try {
-//     const { username, email, password } = req.body;
-//     if (!username || !email || !password) {
-//       return res.status(400).send({ message: "Please fill the form..!!" });
+
+//     if (!email || !password) {
+//       res.status(400).json({ message: "Please provide all data" });
 //     } else {
-//       const isExists = await UserModal.findOne({ email });
-//       if (isExists) {
-//         return res.status(201).json({ message: "User is already exists" });
-//       }
-//       const bycryptPass = await bycrypt.hash(password, 10);
-//       const createUser = await UserModal.create({
-//         username,
-//         email,
-//         password: bycryptPass,
-//       });
-//       if (createUser) {
-//         return res
-//           .status(200)
-//           .json({ message: "User is Registered Succussfully" });
+//       const isUserExists = await UserModal.findOne({ email });
+//       if (
+//         isUserExists &&
+//         (await bycrypt.compare(password, isUserExists.password))
+//       ) {
+//         const accessToken = jwt.sign(
+//           {
+//             user: {
+//               username: isUserExists.username,
+//               email: isUserExists.email,
+//               id: isUserExists.id,
+//             },
+//           },
+//           process.env.ACCESS_TOKEN,
+//           { expiresIn: "24hr" }
+//         );
+//         console.log(accessToken);
+//         if (accessToken) {
+//           res.status(200).json({
+//             success: true,
+//             message: "Logged In Successfully",
+//             accessToken,
+//             user: isUserExists.username
+//           });
+//         }
+//       } else {
+//         res
+//           .json({ success: false, message: "Crendentials are not valid" });
 //       }
 //     }
 //   } catch (error) {
 //     return res.status(500).json({ message: "Internel Server Error", error });
 //   }
 // };
-
-
-//POST Request:Login User
-const postLogin = async (req, res) => {
-  const { email, password } = req.body;
-  try {
-
-    if (!email || !password) {
-      res.status(400).json({ message: "Please provide all data" });
-    } else {
-      const isUserExists = await UserModal.findOne({ email });
-      if (
-        isUserExists &&
-        (await bycrypt.compare(password, isUserExists.password))
-      ) {
-        const accessToken = jwt.sign(
-          {
-            user: {
-              username: isUserExists.username,
-              email: isUserExists.email,
-              id: isUserExists.id,
-            },
-          },
-          process.env.ACCESS_TOKEN,
-          { expiresIn: "24hr" }
-        );
-        console.log(accessToken);
-        if (accessToken) {
-          res.status(200).json({
-            success: true,
-            message: "Logged In Successfully",
-            accessToken,
-            user: isUserExists.username
-          });
-        }
-      } else {
-        res
-          .json({ success: false, message: "Crendentials are not valid" });
-      }
-    }
-  } catch (error) {
-    return res.status(500).json({ message: "Internel Server Error", error });
-  }
-};
 
 const currentUser = async (req, res) => {
   res.status(200).json({ message: "Current user is available" });
