@@ -1,25 +1,29 @@
 const jwt = require("jsonwebtoken");
 
 const validateToken = async (req, res, next) => {
-  let token;
-  console.log(req.headers);
+  console.log(req.headers,"headers");
+
   let authHeader = req.headers.Authorization || req.headers.authorization;
-  console.log(authHeader, "authHeader:validateToken");
-  if (authHeader && authHeader.startsWith("Bearer")) {
-    token = authHeader.split(" ")[1];
+
+  if (authHeader && authHeader.startsWith("Bearer: ")) {
+    const token = authHeader.split(" ")[1];
+
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
       if (err) {
         console.log(err, "err:validateToken");
-         return res.status(406).send({
+        return res.status(406).send({
           success: false,
-          message: "Token is expired",
+          message: "Token is expired or invalid",
         });
       }
 
-      // console.log(decoded,'vvvvvvvvvvvvvvvvvvvvvvvvvvv');
-      req.user=decoded.user;
-      next();
-    //   console.log(req.user,'aaaaaaaaaaaaaaaaaaaaaaaa');
+      req.user = decoded.user; // Attach decoded user to the request object
+      next(); // Proceed to the next middleware/controller
+    });
+  } else {
+    return res.status(401).send({
+      success: false,
+      message: "Authorization token missing or malformed",
     });
   }
 };

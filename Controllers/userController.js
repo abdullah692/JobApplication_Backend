@@ -51,7 +51,7 @@ const postLogin = catchAsyncErrors(async (req, res, next) => {
   if (!email || !password || !role) {
     return next(new ErrorHandler("Please provide the credentials", 400))
   }
-  const user =await UserInfo.findOne({ email }).select("+password");
+  const user = await UserInfo.findOne({ email }).select("+password");
   if (!user) {
     return next(new ErrorHandler("Invalid credentials entered", 400))
   }
