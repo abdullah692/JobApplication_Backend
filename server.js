@@ -26,10 +26,10 @@ app.use(express.urlencoded({ extended: true }));
 //   console.log(req.body);
 // })
 
-app.use('/api/users',require('./routes/usersRoutes'))
-app.use("/api", validateToken);
-app.use('/api',require('./routes/contactsRouter'))
 app.use('/api',require('./routes/applicationRouter'))
+app.use('/api/users',require('./routes/usersRoutes'))
+// app.use("/api", validateToken);
+app.use('/api',require('./routes/contactsRouter'))
 
 app.use(errorMiddleware);
 app.listen(port, () => {
