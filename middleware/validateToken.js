@@ -5,10 +5,12 @@ const validateToken = async (req, res, next) => {
 
   let authHeader = req.headers.Authorization || req.headers.authorization;
 
-  if (authHeader && authHeader.startsWith("Bearer: ")) {
+  if (authHeader && authHeader.startsWith("Bearer")) {
     const token = authHeader.split(" ")[1];
+    console.log("tokenaa",token);
+    
 
-    jwt.verify(token, process.env.ACCESS_TOKEN, (err, decoded) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
       if (err) {
         console.log(err, "err:validateToken");
         return res.status(406).send({
@@ -16,8 +18,10 @@ const validateToken = async (req, res, next) => {
           message: "Token is expired or invalid",
         });
       }
+console.log("decoded.user",decoded.user);
+console.log("decoded",decoded);
 
-      req.user = decoded.user; // Attach decoded user to the request object
+      req.user = decoded; // Attach decoded user to the request object
       next(); // Proceed to the next middleware/controller
     });
   } else {

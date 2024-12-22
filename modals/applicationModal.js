@@ -35,30 +35,38 @@ const applicationModal = new mongoose.Schema({
       required: true,
   },
   },
-  // applicantID: {
-  //   user: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "UserInfo",
+  applicantID: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserInfo",
+      required: false,
+    },
+    role: {
+      type: String,
+      enum: ["Job Seeker"],
+      required: false,
+    },
+  },
+  employerID: {
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "UserInfo",
+      required: false,
+    },
+    role: {
+      type: String,
+      enum: ["Employer"],
+      required: false,
+    },
+  },
+  // jobDetails:{
+  //   type: Object, // Stores the file path or filename
   //     required: false,
-  //   },
-  //   role: {
-  //     type: String,
-  //     enum: ["Job Seeker"],
-  //     required: false,
-  //   },
-  // },
-  // employerID: {
-  //   user: {
-  //     type: mongoose.Schema.Types.ObjectId,
-  //     ref: "UserInfo",
-  //     required: false,
-  //   },
-  //   role: {
-  //     type: String,
-  //     enum: ["Employer"],
-  //     required: false,
-  //   },
-  // },
+  // }
+  jobId:{
+    type: String, // Stores the file path or filename
+      required: false,
+  }
 });
 
 module.exports = mongoose.model("Application", applicationModal);

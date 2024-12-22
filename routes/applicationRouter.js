@@ -1,14 +1,16 @@
 const express = require("express");
 const router=express.Router();
 const {
-  postApplication
+  postApplication,
+  getEmployeerAllApplications
 } = require("../Controllers/applicationController");
 const validateToken=require('../middleware/validateToken')
 const upload=require("../middleware/multer")
 
 
 // router.route('/current').get(validateToken,currentUser)
-router.route('/application').post(upload.single("resume"), postApplication);
+router.route('/application').post(upload.single("resume"),validateToken, postApplication);
+router.route('/employer/getall').get(validateToken,getEmployeerAllApplications)
 
 
 // router.post('/application', upload.single("resume"), (req, res, next) => {
