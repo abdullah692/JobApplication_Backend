@@ -96,8 +96,53 @@ const getEmployeerAllApplications = catchAsyncErrors(async (req, res, next) => {
 
 
 
+const getApplicantAllApplications = catchAsyncErrors(async (req, res, next) => {
+  console.log("req.body", req.user);
+
+  const { role } = req.user;
+  if (role == "Employer") {
+    return next(new ErrorHandler("Employer not allowed to access this request"), 400)
+  }
+  const { id } = req.user;
+  const applications = await Application.find({ "applicantID.user": id });
+  console.log("applications",applications);
+  
+  res.status(200).json({
+    success: true,
+    applications,
+  });
+})
+
+
+const jobSeekerDeleteApplication=catchAsyncErrors(async(req,res,next)=>{
+  const {role}=req.user;
+  if(role == "Employer")
+  {
+    return next(new ErrorHandler("Employer not allowed to access this request"), 400)
+  }
+  console.log("req.param",req.params);
+  const {id}=req.params;
+  console.log("iddsss",id);
+  const application=await Application.findById(id);
+  console.log(application,"applicationfind");
+  if(!application)
+  {
+    return next(new ErrorHandler("Application not found!!"),400);
+  }
+  await application.deleteOne();
+  res.status(200).json({
+    success:true,
+    message:"Application successfully deleted!!"
+  });
+  
+})
+
+
+
 
 module.exports = {
   postApplication,
-  getEmployeerAllApplications
+  getEmployeerAllApplications,
+  getApplicantAllApplications,
+  jobSeekerDeleteApplication
 };

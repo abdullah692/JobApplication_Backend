@@ -2,7 +2,9 @@ const express = require("express");
 const router=express.Router();
 const {
   postApplication,
-  getEmployeerAllApplications
+  getEmployeerAllApplications,
+  getApplicantAllApplications,
+  jobSeekerDeleteApplication
 } = require("../Controllers/applicationController");
 const validateToken=require('../middleware/validateToken')
 const upload=require("../middleware/multer")
@@ -11,6 +13,9 @@ const upload=require("../middleware/multer")
 // router.route('/current').get(validateToken,currentUser)
 router.route('/application').post(upload.single("resume"),validateToken, postApplication);
 router.route('/employer/getall').get(validateToken,getEmployeerAllApplications)
+router.route('/applicant/getall').get(validateToken,getApplicantAllApplications)
+router.route('/deleteJobSeeker/:id').delete(validateToken,jobSeekerDeleteApplication)
+
 
 
 // router.post('/application', upload.single("resume"), (req, res, next) => {
