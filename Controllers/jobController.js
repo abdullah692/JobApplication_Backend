@@ -2,6 +2,7 @@ const catchAsyncErrors=require('../middleware/catchAsyncnErrors')
 const {ErrorHandler}=require('../middleware/Error')
 const Job=require('../modals/jobModal')
 
+
 const postJob = catchAsyncErrors(async (req, res, next) => {
     const { role } = req.user;
     if (role === "Job Seeker") {
@@ -60,7 +61,40 @@ const postJob = catchAsyncErrors(async (req, res, next) => {
       job,
     });
   });
+
+
+const getAlljobs=catchAsyncErrors(async(req,res,next)=>{
+    const jobs=await Job.find({expired:false})
+    res.status(200).json({
+      success:true,
+      message:"All Jobs fetched successfully!!",
+      jobs
+    })
+})
+
+  const getEmployerJobs=catchAsyncErrors(async(req,res,next)=>{
+    const {role}=req.user;
+    if(role == "Job Seeker")
+    {
+      new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+    }
+console.log("req.user",req.user);
+
+    const jobPostedBy= await Job.find({postedBy:req.user.id})
+    console.log("jobPostedBy",jobPostedBy);
+    if(!jobPostedBy)
+    {
+      return next(new ErrorHandler("Sorry! No jobs were posted by you"),400)
+    }
+    res.status(200).json({
+      success:true,
+      message:"Jobs fetched successfully!",
+      jobPostedBy
+    })
+  })
   
 module.exports={
-    postJob
+    postJob,
+    getEmployerJobs,
+    getAlljobs
 }
