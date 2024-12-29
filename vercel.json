@@ -11,6 +11,7 @@
         "src": "/api/(.*)",
         "dest": "server.js"
       }
-    ]
+    ],
+      "buildCommand": "npm install --registry=https://registry.npmjs.org/"
   }
   
