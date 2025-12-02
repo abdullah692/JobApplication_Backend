@@ -1,7 +1,8 @@
 const catchAsyncErrors = require("../middleware/catchAsyncnErrors")
 const { ErrorHandler } = require("../middleware/Error");
 const Application = require("../modals/applicationModal")
-const Job=require("../modals/jobModal")
+const Job = require("../modals/jobModal")
+const UserInfo = require("../modals/userModal")
 
 const postApplication = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
@@ -15,14 +16,14 @@ const postApplication = catchAsyncErrors(async (req, res, next) => {
   }
   const { path: path, filename: filename } = req.file;
   const { name, email, coverLetter, phone, address, jobId } = req.body;
-console.log("jobid",req.body);
+  console.log("jobid", req.body);
 
   if (!jobId) {
     return next(new ErrorHandler("Job not found!", 404));
   }
   const jobDetails = await Job.findById(jobId);
-  console.log("JobDetauk",jobDetails);
-  
+  console.log("JobDetauk", jobDetails);
+
   if (!jobDetails) {
     return next(new ErrorHandler("Job not found!", 404));
   }
@@ -34,9 +35,9 @@ console.log("jobid",req.body);
     user: jobDetails.postedBy.toString(),
     role: "Employer",
   };
-  console.log("applicantID",applicantID);
-  console.log("employerID",employerID);
-  
+  console.log("applicantID", applicantID);
+  console.log("employerID", employerID);
+
 
   if (
     !name ||
@@ -65,7 +66,7 @@ console.log("jobid",req.body);
       path,
       filename
     },
-    
+
   });
 
   res.status(200).json({
@@ -86,8 +87,8 @@ const getEmployeerAllApplications = catchAsyncErrors(async (req, res, next) => {
   }
   const { id } = req.user;
   const applications = await Application.find({ "employerID.user": id });
-  console.log("applications",applications);
-  
+  console.log("applications", applications);
+
   res.status(200).json({
     success: true,
     applications,
@@ -105,8 +106,8 @@ const getApplicantAllApplications = catchAsyncErrors(async (req, res, next) => {
   }
   const { id } = req.user;
   const applications = await Application.find({ "applicantID.user": id });
-  console.log("applications",applications);
-  
+  console.log("applications", applications);
+
   res.status(200).json({
     success: true,
     applications,
@@ -114,28 +115,66 @@ const getApplicantAllApplications = catchAsyncErrors(async (req, res, next) => {
 })
 
 
-const jobSeekerDeleteApplication=catchAsyncErrors(async(req,res,next)=>{
-  const {role}=req.user;
-  if(role == "Employer")
-  {
+const jobSeekerDeleteApplication = catchAsyncErrors(async (req, res, next) => {
+  const { role } = req.user;
+  if (role == "Employer") {
     return next(new ErrorHandler("Employer not allowed to access this request"), 400)
   }
-  console.log("req.param",req.params);
-  const {id}=req.params;
-  console.log("iddsss",id);
-  const application=await Application.findById(id);
-  console.log(application,"applicationfind");
-  if(!application)
-  {
-    return next(new ErrorHandler("Application not found!!"),400);
+  console.log("req.param", req.params);
+  const { id } = req.params;
+  console.log("iddsss", id);
+  const application = await Application.findById(id);
+  console.log(application, "applicationfind");
+  if (!application) {
+    return next(new ErrorHandler("Application not found!!"), 400);
   }
   await application.deleteOne();
   res.status(200).json({
-    success:true,
-    message:"Application successfully deleted!!"
+    success: true,
+    message: "Application successfully deleted!!"
   });
-  
+
 })
+
+const getSummary = catchAsyncErrors(async (req, res, next) => {
+  try {
+    // Fetch all
+    debugger
+    const [jobs, users] = await Promise.all([
+      Job.find({ expired: false }),
+      UserInfo.find()
+    ]);
+
+    const jobSeekers = users.filter(u => u.role === "Job Seeker");
+    const employers = users.filter(u => u.role === "Employer");
+    // Filter roles
+    const employersRes = employers.map((emp => {
+      const empJobs = jobs.filter((val) => val.postedBy == emp._id.toString())
+      return {
+        employer: emp,
+        jobs: empJobs
+      }
+    }))
+
+    // const employers = users.filter(u => u.role === "Employer");
+
+    // Array of objects (your requirement)
+    const summary = {
+      employersRes,
+      jobSeekers
+
+    };
+
+    res.status(200).json({
+      success: true,
+      summary
+    });
+
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 
 
@@ -144,5 +183,6 @@ module.exports = {
   postApplication,
   getEmployeerAllApplications,
   getApplicantAllApplications,
-  jobSeekerDeleteApplication
+  jobSeekerDeleteApplication,
+  getSummary
 };
