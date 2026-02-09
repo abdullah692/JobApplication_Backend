@@ -4,7 +4,7 @@ const {
     getUsers,
     registerUser,
     postLogin,
-    currentUser 
+    currentUser  
 }=require('../Controllers/userController')
 const validateToken=require('../middleware/validateToken')
 
