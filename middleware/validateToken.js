@@ -18,7 +18,6 @@ const validateToken = async (req, res, next) => {
           message: "Token is expired or invalid",
         });
       }
-console.log("decoded.user",decoded.user);
 console.log("decoded",decoded);
 
       req.user = decoded; // Attach decoded user to the request object
