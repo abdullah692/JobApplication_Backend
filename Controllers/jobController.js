@@ -6,7 +6,7 @@ const Job = require('../modals/jobModal')
 const postJob = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
   if (role === "Job Seeker") {
-    return next(
+    return next( 
       new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
     );
   }
