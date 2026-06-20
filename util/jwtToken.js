@@ -3,12 +3,13 @@ const sendToken = (user, statusCode, res, message) => {
     // Generate the token using the user's method
     
     const token = user.getJWTtoken();
-    console.log("TOKEN",token);
+    console.log("TOKEN",user.role);
+    let role =user.role
   
     // Send the token in the JSON response
     res.status(statusCode).json({
       success: true,
-      // user,
+      role,
       message,
       token, // Token included in the response
     });
