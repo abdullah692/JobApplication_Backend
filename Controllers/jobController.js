@@ -75,11 +75,14 @@ const getAlljobs = catchAsyncErrors(async (req, res, next) => {
 const getEmployerJobs = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
   if (role == "Job Seeker") {
-    new ErrorHandler("Job Seeker not allowed to access this resource.", 400)
+    return next(
+      new ErrorHandler("Job Seeker not allowed to access this resource.", 403)
+    )
   }
+
   const jobPostedBy = await Job.find({ postedBy: req.user.id })
-  if (!jobPostedBy) {
-    return next(new ErrorHandler("Sorry! No jobs were posted by you"), 400)
+  if (jobPostedBy.length == 0) {
+    return next(new ErrorHandler("Sorry! No jobs were posted by you"), 404)
   }
   res.status(200).json({
     success: true,
