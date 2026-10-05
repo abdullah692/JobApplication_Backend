@@ -147,7 +147,7 @@ const deleteJob = catchAsyncErrors(async (req, res, next) => {
   await job.deleteOne();
   res.status(200).json({
     success: true,
-    message: "Job deleted!!",
+    message: "Job deleted successfully!!",
     job
   })
 })
