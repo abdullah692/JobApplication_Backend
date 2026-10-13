@@ -14,6 +14,7 @@ const postJob = catchAsyncErrors(async (req, res, next) => {
     title,
     description,
     category,
+    companyName,
     country,
     city,
     location,
@@ -22,7 +23,7 @@ const postJob = catchAsyncErrors(async (req, res, next) => {
     salaryTo,
   } = req.body;
 
-  if (!title || !description || !category || !country || !city || !location) {
+  if (!title || !description || !category || !companyName || !country || !city || !location) {
     return next(new ErrorHandler("Please provide full job details.", 400));
   }
 
@@ -47,6 +48,7 @@ const postJob = catchAsyncErrors(async (req, res, next) => {
     title,
     description,
     category,
+    companyName,
     country,
     city,
     location,

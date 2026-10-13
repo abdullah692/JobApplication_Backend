@@ -18,6 +18,10 @@ const jobModal = mongoose.Schema(
       type: String,
       required: [true, "Please provide a category."],
     },
+    companyName: {
+      type: String,
+      required: [true, "Please provide a company name."],
+    },
     country: {
       type: String,
       required: [true, "Please provide a country name."],
