@@ -26,15 +26,19 @@ const applicationModal = new mongoose.Schema({
     required: [true, "Please enter your Address!"],
   },
   resume: {
-    path: {
-      type: String, // Stores the file path or filename
-      required: true,
+  url: {
+    type: String,
+    required: true,
+  },
+  publicId: {
+    type: String,
+    required: true,
   },
   filename: {
-      type: String, // Stores the original file name
-      required: true,
+    type: String,
+    required: true,
   },
-  },
+},
   applicantID: {
     user: {
       type: mongoose.Schema.Types.ObjectId,

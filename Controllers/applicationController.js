@@ -3,6 +3,7 @@ const { ErrorHandler } = require("../middleware/Error");
 const Application = require("../modals/applicationModal")
 const Job = require("../modals/jobModal")
 const UserInfo = require("../modals/userModal")
+const cloudinary = require("../config/cloudinary")
 
 const postApplication = catchAsyncErrors(async (req, res, next) => {
   const { role } = req.user;
@@ -51,7 +52,15 @@ const postApplication = catchAsyncErrors(async (req, res, next) => {
     // Delete uploaded file if validation fails
     // fs.unlinkSync(resumePath);
     return next(new ErrorHandler("Please fill all fields.", 400));
+
+
   }
+
+
+  const result = await cloudinary.uploader.upload(req.file.path, {
+    resource_type: "image",
+    folder: "employerhub/resumes",
+  });
 
   const application = await Application.create({
     name,
@@ -63,9 +72,10 @@ const postApplication = catchAsyncErrors(async (req, res, next) => {
     applicantID,
     employerID,
     resume: {
-      path,
-      filename
-    },
+      url: result.secure_url,
+      publicId: result.public_id,
+      filename: req.file.originalname,
+    }
 
   });
 
