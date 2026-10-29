@@ -96,7 +96,7 @@ const getEmployeerAllApplications = catchAsyncErrors(async (req, res, next) => {
     return next(new ErrorHandler("Job Seeker not allowed to access this request"), 400)
   }
   const { id } = req.user;
-  const applications = await Application.find({ "employerID.user": id });
+  const applications = await Application.find({ "employerID.user": id }).populate("jobId", "title companyName");
   console.log("applications", applications);
 
   res.status(200).json({

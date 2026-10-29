@@ -70,7 +70,9 @@ const applicationModal = new mongoose.Schema({
   jobId:{
     type: String, // Stores the file path or filename
       required: false,
+      ref: "Jobs",
   }
-});
+},
+  { timestamps: true });
 
 module.exports = mongoose.model("Application", applicationModal);
