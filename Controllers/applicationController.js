@@ -146,6 +146,35 @@ const jobSeekerDeleteApplication = catchAsyncErrors(async (req, res, next) => {
 
 })
 
+
+const employeerDeleteApplications = catchAsyncErrors(async (req, res, next) => {
+  const { role, id: employerId } = req.user;
+  if (role == "Job Seeker") {
+    return next(new ErrorHandler("Job Seekers are not allowed to access this reuqest."), 403)
+  }
+
+  const { id } = req.params
+  const application = await Application.findOne({
+    _id: id,
+    "employerID.user": employerId
+  });
+
+  console.log("application", application);
+
+  if (!application) {
+    return next(
+      new ErrorHandler("Application not found or access denied", 404)
+    );
+  }
+
+  await application.deleteOne();
+  res.status(200).json({
+    success: true,
+    message: "Application successfully deleted!!"
+  });
+
+})
+
 const getSummary = catchAsyncErrors(async (req, res, next) => {
   try {
     // Fetch all
@@ -194,5 +223,6 @@ module.exports = {
   getEmployeerAllApplications,
   getApplicantAllApplications,
   jobSeekerDeleteApplication,
+  employeerDeleteApplications,
   getSummary
 };

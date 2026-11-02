@@ -5,6 +5,7 @@ const {
   getEmployeerAllApplications,
   getApplicantAllApplications,
   jobSeekerDeleteApplication,
+  employeerDeleteApplications,
   getSummary
 } = require("../Controllers/applicationController");
 const validateToken=require('../middleware/validateToken')
@@ -16,6 +17,8 @@ router.route('/application').post(upload.single("resume"),validateToken, postApp
 router.route('/employer/jobSeekerResumes').get(validateToken,getEmployeerAllApplications)
 router.route('/applicant/getall').get(validateToken,getApplicantAllApplications)
 router.route('/deleteJobSeeker/:id').delete(validateToken,jobSeekerDeleteApplication)
+router.route('/deleteJobSeekerByEmployer/:id').delete(validateToken,employeerDeleteApplications)
+
 router.route('/getSummary').get(getSummary)
 
 
